@@ -1,4 +1,4 @@
-package it.tasd.example.micro;
+package it.tasd.example.micro.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -11,9 +11,8 @@ import java.time.ZonedDateTime;
 
 
 
-public class Temperature {
+public class SensorReading {
     private String sensorId;
-
 
     public BigDecimal getValue() {
         return value;
