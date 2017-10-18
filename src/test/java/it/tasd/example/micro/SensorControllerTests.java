@@ -10,7 +10,7 @@ import it.tasd.example.micro.rest.SensorController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,9 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import javax.transaction.Transactional;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MicroApplication.class)
-public class MicroApplicationTests {
+public class SensorControllerTests {
 
 	@Autowired
 	private SensorController controller;
@@ -48,9 +45,6 @@ public class MicroApplicationTests {
 	@MockBean
 	private SensorRepository repo;
 
-	@Autowired
-	private SensorRepository sensorRepository;
-
 	private List<Sensor> testSensorList;
 
 	@Before
@@ -60,11 +54,11 @@ public class MicroApplicationTests {
 		sensor1.setId(1);
 		sensor1.setUuid(UUID.randomUUID().toString());
 		sensor1.setDescription("Temperature sensor");
-		sensor1.setType(SensorType.Temperature);
+		sensor1.setType(SensorType.TEMPERATURE);
 		Sensor sensor2 = new Sensor();
 		sensor2.setId(2);
 		sensor2.setUuid(UUID.randomUUID().toString());
-		sensor2.setType(SensorType.Pression);
+		sensor2.setType(SensorType.PRESSION);
 		sensor2.setDescription("Pression sensor");
 		testSensorList = Stream.of(sensor1, sensor2).collect(Collectors.toList());
 	}
@@ -74,7 +68,7 @@ public class MicroApplicationTests {
 	public void getSensors200() throws Exception {
 		when(repo.findAll()).thenReturn(testSensorList);
 
-		MvcResult result = mvc.perform(get("/sensors"))
+		MvcResult result = mvc.perform(get("/api/sensors"))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 				.andReturn();
@@ -89,7 +83,7 @@ public class MicroApplicationTests {
 	public void getSensor200() throws Exception {
 
 		when(repo.findById(testSensorList.get(0).getId())).thenReturn(Optional.of(testSensorList.get(0)));
-		MvcResult result = mvc.perform(get("/sensors/{sensorId}", testSensorList.get(0).getId()))
+		MvcResult result = mvc.perform(get("/api/sensors/{sensorId}", testSensorList.get(0).getId()))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)).andReturn();
 		verify(repo, times(1)).findById(testSensorList.get(0).getId());
@@ -106,7 +100,7 @@ public class MicroApplicationTests {
 				+1;
 		String plantId = UUID.randomUUID().toString();
 		when(repo.findById(sensorId)).thenReturn(Optional.ofNullable(null));
-		MvcResult result = mvc.perform(get("/sensors/{sensorId}", sensorId)).andExpect(status().isNoContent()).andReturn();
+		MvcResult result = mvc.perform(get("/api/sensors/{sensorId}", sensorId)).andExpect(status().isNoContent()).andReturn();
 		verify(repo, times(1)).findById(sensorId);
 	}
 

@@ -1,46 +1,39 @@
 package it.tasd.example.micro.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
+public class SensorData {
+    public SensorData(String sensorUUID, BigDecimal value, ZonedDateTime zdt) {
+        this.sensorUUID = sensorUUID;
+        this.value = value;
+        this.zdt = zdt;
+    }
 
-
-public class SensorReading {
-    private String sensorId;
+    public SensorData(Sensor sensor, BigDecimal defaultValue){
+        this.sensorUUID = sensor.getUuid();
+        this.value = defaultValue;
+        this.zdt = ZonedDateTime.now();
+    }
+    private String sensorUUID;
 
     public BigDecimal getValue() {
         return value;
     }
 
-    public void setValue(BigDecimal value) {
-        this.value = value;
-    }
-
     private BigDecimal value;
 
-    public String getSensorId() {
-        return sensorId;
+    public String getSensorUUID() {
+        return sensorUUID;
     }
-
-    public void setSensorId(String sensorId) {
-        this.sensorId = sensorId;
-    }
-
 
 
     public ZonedDateTime getZdt() {
         return zdt;
     }
 
-    public void setZdt(ZonedDateTime zdt) {
-        this.zdt = zdt;
-    }
     @JsonFormat(pattern = "yyyy-MM-dd@HH:mm:ss.SSS")
     private ZonedDateTime zdt;
 }

@@ -9,4 +9,5 @@ public class MicroApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MicroApplication.class, args);
 	}
+
 }
