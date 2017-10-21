@@ -1,6 +1,7 @@
 FROM openjdk:8-jre-alpine
 
-ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS 
+ENV MYSQL_ADDRESS=localhost
+ENV MYSQL_PORT=3306
 
 # add directly the jar
 ADD /target/*.jar /app.jar

@@ -1,0 +1,37 @@
+version: '3.2'
+
+services:
+
+  mysql-db:
+    image: mysql/mysql-server:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=tasd 
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_DATABASE=db_micro
+    ports:
+      - 3306:3306
+      - 33060:33060
+    volumes:
+      - type: volume
+        source: my-vol
+        target: /var/lib/mysql
+        volume:
+          nocopy: true
+    
+  micro2:
+    image: miciav/micro:0.2
+    restart: always
+    environment:
+      - MYSQL_ADDRESS=mysql-db
+      - MYSQL_PORT=3306
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql-db
+
+networks:
+  my-net:
+
+volumes:
+  my-vol:
