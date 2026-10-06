@@ -6,14 +6,12 @@ import it.tasd.example.micro.domain.Sensor;
 import it.tasd.example.micro.domain.SensorType;
 import it.tasd.example.micro.repository.SensorRepository;
 import it.tasd.example.micro.rest.SensorController;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,7 +29,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = MicroApplication.class)
 @Transactional
 public class SensorControllerDBTests {
@@ -49,16 +46,14 @@ public class SensorControllerDBTests {
 
 	private List<Sensor> testSensorList;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 		Sensor sensor1 = new Sensor();
-		sensor1.setId(1);
 		sensor1.setUuid(UUID.randomUUID().toString());
 		sensor1.setDescription("Temperature sensor");
 		sensor1.setType(SensorType.TEMPERATURE);
 		Sensor sensor2 = new Sensor();
-		sensor2.setId(2);
 		sensor2.setUuid(UUID.randomUUID().toString());
 		sensor2.setType(SensorType.PRESSION);
 		sensor2.setDescription("Pression sensor");
@@ -73,7 +68,7 @@ public class SensorControllerDBTests {
 
 		MvcResult result = mvc.perform(get("/api/sensors"))
 				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andReturn();
 		String jsonString = result.getResponse().getContentAsString();
 		List<Sensor> responseSensors = (List<Sensor>) objectMapper.readValue(jsonString, new TypeReference<List<Sensor>>(){});
@@ -88,19 +83,15 @@ public class SensorControllerDBTests {
 
 		MvcResult result = mvc.perform(get("/api/sensors/{sensorId}", savedSensorList.get(0).getId()))
 				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)).andReturn();
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 		String jsonString = result.getResponse().getContentAsString();
 		Sensor sensor = (Sensor) objectMapper.readValue(jsonString, Sensor.class);
-		assertThat(sensor).isEqualToComparingFieldByField(savedSensorList.get(0));
+		assertThat(sensor).usingRecursiveComparison().isEqualTo(savedSensorList.get(0));
 	}
 
 	@Test
 	public void testGetSensor204() throws Exception {
-		Integer sensorId = testSensorList.stream()
-				.max((s1,s2)->s1.getId().compareTo(s2.getId()))
-				.get().getId()
-				+1;
-		String plantId = UUID.randomUUID().toString();
+		Integer sensorId = 9999;
 		MvcResult result = mvc.perform(get("/api/sensors/{sensorId}", sensorId)).andExpect(status().isNoContent()).andReturn();
 	}
 

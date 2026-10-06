@@ -7,15 +7,13 @@ import it.tasd.example.micro.domain.SensorType;
 import it.tasd.example.micro.repository.SensorRepository;
 import it.tasd.example.micro.rest.SensorController;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -30,7 +28,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = MicroApplication.class)
 public class SensorControllerTests {
 
@@ -47,7 +44,7 @@ public class SensorControllerTests {
 
 	private List<Sensor> testSensorList;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 		Sensor sensor1 = new Sensor();
@@ -70,7 +67,7 @@ public class SensorControllerTests {
 
 		MvcResult result = mvc.perform(get("/api/sensors"))
 				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andReturn();
 		verify(repo, times(1)).findAll();
 		String jsonString = result.getResponse().getContentAsString();
@@ -85,11 +82,11 @@ public class SensorControllerTests {
 		when(repo.findById(testSensorList.get(0).getId())).thenReturn(Optional.of(testSensorList.get(0)));
 		MvcResult result = mvc.perform(get("/api/sensors/{sensorId}", testSensorList.get(0).getId()))
 				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)).andReturn();
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 		verify(repo, times(1)).findById(testSensorList.get(0).getId());
 		String jsonString = result.getResponse().getContentAsString();
 		Sensor sensor = (Sensor) objectMapper.readValue(jsonString, Sensor.class);
-		assertThat(sensor).isEqualToComparingFieldByField(testSensorList.get(0));
+		assertThat(sensor).usingRecursiveComparison().isEqualTo(testSensorList.get(0));
 	}
 
 	@Test

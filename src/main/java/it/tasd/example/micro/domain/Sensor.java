@@ -1,11 +1,11 @@
 package it.tasd.example.micro.domain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class Sensor  {
-    @javax.persistence.Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @jakarta.persistence.Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer Id;
 
     public String getUuid() {

@@ -1,11 +1,11 @@
-FROM openjdk:8-jre-alpine
+FROM --platform=$BUILDPLATFORM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /workspace
+COPY pom.xml .
+COPY src src
+RUN mvn -B package
 
-ENV MYSQL_ADDRESS=localhost
-ENV MYSQL_PORT=3306
-
-# add directly the jar
-ADD /target/*.jar /app.jar
-
-VOLUME /tmp
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /workspace/target/micro-0.3.0.jar app.jar
 EXPOSE 8080
-CMD java -Djava.security.egd=file:/dev/./urandom -jar /app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

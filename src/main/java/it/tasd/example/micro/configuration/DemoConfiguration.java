@@ -26,12 +26,10 @@ public class DemoConfiguration {
     public CommandLineRunner sensors() {
     return     args->{
             Sensor sensor1 = new Sensor();
-            sensor1.setId(1);
             sensor1.setUuid(UUID.randomUUID().toString());
             sensor1.setDescription("Temperature sensor");
             sensor1.setType(SensorType.TEMPERATURE);
             Sensor sensor2 = new Sensor();
-            sensor2.setId(2);
             sensor2.setUuid(UUID.randomUUID().toString());
             sensor2.setType(SensorType.PRESSION);
             sensor2.setDescription("Pression sensor");

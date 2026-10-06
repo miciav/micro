@@ -1,37 +1,36 @@
-version: '3.2'
-
 services:
-
   mysql-db:
-    image: mysql/mysql-server:8.0
-    restart: always
+    image: mariadb:11.4
     environment:
-      - MYSQL_ROOT_PASSWORD=tasd 
-      - MYSQL_ROOT_HOST=%
-      - MYSQL_DATABASE=db_micro
-    ports:
-      - 3306:3306
-      - 33060:33060
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-tasd-root}
+      MARIADB_DATABASE: db_micro
+      MARIADB_USER: micro
+      MARIADB_PASSWORD: ${DB_PASSWORD:-tasd}
     volumes:
-      - type: volume
-        source: my-vol
-        target: /var/lib/mysql
-        volume:
-          nocopy: true
-    
+      - my-vol:/var/lib/mysql
+    networks: [my-net]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
   micro2:
-    image: miciav/micro:0.2
-    restart: always
+    build: .
+    image: miciav/micro:0.3.0
     environment:
-      - MYSQL_ADDRESS=mysql-db
-      - MYSQL_PORT=3306
+      MYSQL_ADDRESS: mysql-db
+      MYSQL_PORT: 3306
+      DB_USERNAME: micro
+      DB_PASSWORD: ${DB_PASSWORD:-tasd}
+      DB_SSL_MODE: verify-full
     ports:
-      - 8080:8080
+      - "127.0.0.1:${MICRO_HTTP_PORT:-8080}:8080"
     depends_on:
-      - mysql-db
-
+      mysql-db:
+        condition: service_healthy
+    networks: [my-net]
 networks:
   my-net:
-
 volumes:
   my-vol:
